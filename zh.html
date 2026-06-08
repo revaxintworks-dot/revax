@@ -24,6 +24,7 @@
       </a>
       <nav class="nav" aria-label="主要菜单">
         <a href="#services">业务内容</a>
+        <a href="#price">价格参考</a>
         <a href="#trust">安心理由</a>
         <a href="#works">适用场所</a>
         <a href="#area">服务区域</a>
@@ -95,6 +96,63 @@
             <h3>室内翻新</h3>
             <p>搬出后的恢复原状、店铺空间营造、局部修补等多种室内工程。</p>
           </article>
+        </div>
+      </section>
+
+      <section id="price" class="section price">
+        <div class="section-head">
+          <p class="section-label">Price</p>
+          <h2>价格模拟</h2>
+          <p>选择墙纸类别并输入施工面积，即可查看大致费用。</p>
+        </div>
+        <div class="price-layout">
+          <div class="price-panel">
+            <div class="price-tabs" role="tablist" aria-label="墙纸价格类别">
+              <button class="price-tab active" type="button" data-price-type="mass" aria-pressed="true">量产墙纸</button>
+              <button class="price-tab" type="button" data-price-type="general" aria-pressed="false">一般墙纸</button>
+            </div>
+            <div class="price-inputs">
+              <label>
+                墙纸类别
+                <select id="wallpaper-type">
+                  <option value="mass">量产墙纸 950日元/㎡起（不含税）</option>
+                  <option value="general">一般墙纸 1,200日元/㎡起（不含税）</option>
+                </select>
+              </label>
+              <label>
+                施工面积
+                <span class="area-input">
+                  <input id="wallpaper-area" type="number" min="1" max="500" step="1" inputmode="numeric" placeholder="请输入面积" />
+                  <span>㎡</span>
+                </span>
+              </label>
+            </div>
+            <div class="price-result" aria-live="polite">
+              <span>预计金额</span>
+              <strong id="price-total">请输入面积</strong>
+              <small id="price-formula">显示金额均为不含税价格</small>
+            </div>
+          </div>
+          <div class="price-guide">
+            <h3>分类价格参考</h3>
+            <dl>
+              <div>
+                <dt>量产墙纸</dt>
+                <dd>950日元/㎡起（不含税）。适合租赁房屋、恢复原状和简单更换。</dd>
+              </div>
+              <div>
+                <dt>一般墙纸</dt>
+                <dd>1,200日元/㎡起（不含税）。适合重视图案和质感的住宅及店铺。</dd>
+              </div>
+            </dl>
+            <p class="price-minimum">
+              <strong>40㎡以内统一价格：量产墙纸38,000日元（不含税），一般墙纸48,000日元（不含税）。</strong>
+            </p>
+            <p>
+              金额仅供参考。基层处理、现有墙纸状态、材料和现场条件不同，费用可能变化。
+              正式报价将在现场确认后提供。
+            </p>
+          </div>
         </div>
       </section>
 
@@ -226,5 +284,40 @@
       <p>&copy; Interior REVAX</p>
       <a href="#top">返回顶部</a>
     </footer>
+    <script>
+      const wallpaperRates = {
+        mass: { label: "量产墙纸", rate: 950, minimum: 38000 },
+        general: { label: "一般墙纸", rate: 1200, minimum: 48000 },
+      };
+      const typeSelect = document.querySelector("#wallpaper-type");
+      const areaInput = document.querySelector("#wallpaper-area");
+      const totalOutput = document.querySelector("#price-total");
+      const formulaOutput = document.querySelector("#price-formula");
+      const priceTabs = document.querySelectorAll(".price-tab");
+      const formatYen = (value) => new Intl.NumberFormat("zh-CN").format(value) + "日元";
+      function updatePrice(type = typeSelect.value) {
+        const area = Math.max(Number(areaInput.value) || 0, 0);
+        const item = wallpaperRates[type];
+        typeSelect.value = type;
+        if (!area) {
+          totalOutput.textContent = "请输入面积";
+          formulaOutput.textContent = "显示金额均为不含税价格";
+        } else if (area <= 40) {
+          totalOutput.textContent = formatYen(item.minimum) + "（不含税）";
+          formulaOutput.textContent = item.label + "・40㎡以内统一价格";
+        } else {
+          totalOutput.textContent = formatYen(area * item.rate) + "起（不含税）";
+          formulaOutput.textContent = area + "㎡ × " + formatYen(item.rate);
+        }
+        priceTabs.forEach((tab) => {
+          const isActive = tab.dataset.priceType === type;
+          tab.classList.toggle("active", isActive);
+          tab.setAttribute("aria-pressed", String(isActive));
+        });
+      }
+      priceTabs.forEach((tab) => tab.addEventListener("click", () => updatePrice(tab.dataset.priceType)));
+      typeSelect.addEventListener("change", () => updatePrice(typeSelect.value));
+      areaInput.addEventListener("input", () => updatePrice());
+    </script>
   </body>
 </html>

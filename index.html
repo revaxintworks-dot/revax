@@ -24,6 +24,7 @@
       </a>
       <nav class="nav" aria-label="Main menu">
         <a href="#services">Services</a>
+        <a href="#price">Price Guide</a>
         <a href="#trust">Trust</a>
         <a href="#works">Sites</a>
         <a href="#area">Areas</a>
@@ -95,6 +96,63 @@
             <h3>Interior Renovation</h3>
             <p>Restoration after move-out, shop interiors, partial repairs and a wide range of interior work.</p>
           </article>
+        </div>
+      </section>
+
+      <section id="price" class="section price">
+        <div class="section-head">
+          <p class="section-label">Price</p>
+          <h2>Price Calculator</h2>
+          <p>Enter the wallpaper category and installation area to see an estimated price.</p>
+        </div>
+        <div class="price-layout">
+          <div class="price-panel">
+            <div class="price-tabs" role="tablist" aria-label="Wallpaper price category">
+              <button class="price-tab active" type="button" data-price-type="mass" aria-pressed="true">Standard Commercial Wallpaper</button>
+              <button class="price-tab" type="button" data-price-type="general" aria-pressed="false">General Wallpaper</button>
+            </div>
+            <div class="price-inputs">
+              <label>
+                Wallpaper Category
+                <select id="wallpaper-type">
+                  <option value="mass">Standard Commercial Wallpaper: ¥950/m² and up, excluding tax</option>
+                  <option value="general">General Wallpaper: ¥1,200/m² and up, excluding tax</option>
+                </select>
+              </label>
+              <label>
+                Installation Area
+                <span class="area-input">
+                  <input id="wallpaper-area" type="number" min="1" max="500" step="1" inputmode="numeric" placeholder="Enter area" />
+                  <span>m²</span>
+                </span>
+              </label>
+            </div>
+            <div class="price-result" aria-live="polite">
+              <span>Estimated Price</span>
+              <strong id="price-total">Please enter the area</strong>
+              <small id="price-formula">Prices shown exclude tax</small>
+            </div>
+          </div>
+          <div class="price-guide">
+            <h3>Price Guide by Category</h3>
+            <dl>
+              <div>
+                <dt>Standard Commercial Wallpaper</dt>
+                <dd>From ¥950/m² excluding tax. Recommended for rental properties, restoration and simple replacements.</dd>
+              </div>
+              <div>
+                <dt>General Wallpaper</dt>
+                <dd>From ¥1,200/m² excluding tax. Suitable for homes and shops where pattern and texture are important.</dd>
+              </div>
+            </dl>
+            <p class="price-minimum">
+              <strong>For areas up to 40m², the flat rates are ¥38,000 excluding tax for Standard Commercial Wallpaper and ¥48,000 excluding tax for General Wallpaper.</strong>
+            </p>
+            <p>
+              Prices are estimates and may vary depending on surface preparation, existing wallpaper condition, materials and site conditions.
+              A formal estimate is provided after a site check.
+            </p>
+          </div>
         </div>
       </section>
 
@@ -226,5 +284,40 @@
       <p>&copy; Interior REVAX</p>
       <a href="#top">Back to top</a>
     </footer>
+    <script>
+      const wallpaperRates = {
+        mass: { label: "Standard Commercial Wallpaper", rate: 950, minimum: 38000 },
+        general: { label: "General Wallpaper", rate: 1200, minimum: 48000 },
+      };
+      const typeSelect = document.querySelector("#wallpaper-type");
+      const areaInput = document.querySelector("#wallpaper-area");
+      const totalOutput = document.querySelector("#price-total");
+      const formulaOutput = document.querySelector("#price-formula");
+      const priceTabs = document.querySelectorAll(".price-tab");
+      const formatYen = (value) => "¥" + new Intl.NumberFormat("en-US").format(value);
+      function updatePrice(type = typeSelect.value) {
+        const area = Math.max(Number(areaInput.value) || 0, 0);
+        const item = wallpaperRates[type];
+        typeSelect.value = type;
+        if (!area) {
+          totalOutput.textContent = "Please enter the area";
+          formulaOutput.textContent = "Prices shown exclude tax";
+        } else if (area <= 40) {
+          totalOutput.textContent = formatYen(item.minimum) + " excluding tax";
+          formulaOutput.textContent = item.label + " flat rate for up to 40m²";
+        } else {
+          totalOutput.textContent = formatYen(area * item.rate) + " and up, excluding tax";
+          formulaOutput.textContent = area + "m² × " + formatYen(item.rate);
+        }
+        priceTabs.forEach((tab) => {
+          const isActive = tab.dataset.priceType === type;
+          tab.classList.toggle("active", isActive);
+          tab.setAttribute("aria-pressed", String(isActive));
+        });
+      }
+      priceTabs.forEach((tab) => tab.addEventListener("click", () => updatePrice(tab.dataset.priceType)));
+      typeSelect.addEventListener("change", () => updatePrice(typeSelect.value));
+      areaInput.addEventListener("input", () => updatePrice());
+    </script>
   </body>
 </html>

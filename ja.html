@@ -24,6 +24,7 @@
       </a>
       <nav class="nav" aria-label="主要メニュー">
         <a href="#services">業務内容</a>
+        <a href="#price">料金目安</a>
         <a href="#trust">選ばれる理由</a>
         <a href="#works">対応現場</a>
         <a href="#area">対応エリア</a>
@@ -95,6 +96,63 @@
             <h3>内装リフォーム</h3>
             <p>退去後の原状回復、店舗の雰囲気づくり、部分補修など内装まわりを幅広く承ります。</p>
           </article>
+        </div>
+      </section>
+
+      <section id="price" class="section price">
+        <div class="section-head">
+          <p class="section-label">Price</p>
+          <h2>料金シミュレーション</h2>
+          <p>クロス工事の概算金額を、種類と面積からかんたんに確認できます。</p>
+        </div>
+        <div class="price-layout">
+          <div class="price-panel">
+            <div class="price-tabs" role="tablist" aria-label="料金カテゴリー">
+              <button class="price-tab active" type="button" data-price-type="mass" aria-pressed="true">量産クロス</button>
+              <button class="price-tab" type="button" data-price-type="standard" aria-pressed="false">一般クロス</button>
+            </div>
+            <div class="price-inputs">
+              <label>
+                クロスの種類
+                <select id="wallpaper-type">
+                  <option value="mass">量産クロス 950円/㎡〜（税抜）</option>
+                  <option value="standard">一般クロス 1,200円/㎡〜（税抜）</option>
+                </select>
+              </label>
+              <label>
+                施工面積
+                <span class="area-input">
+                  <input id="wallpaper-area" type="number" min="1" max="500" step="1" inputmode="numeric" placeholder="面積を入力" />
+                  <span>㎡</span>
+                </span>
+              </label>
+            </div>
+            <div class="price-result" aria-live="polite">
+              <span>概算金額</span>
+              <strong id="price-total">面積を入力してください</strong>
+              <small id="price-formula">表示金額は税抜です</small>
+            </div>
+          </div>
+          <div class="price-guide">
+            <h3>カテゴリー別の目安</h3>
+            <dl>
+              <div>
+                <dt>量産クロス</dt>
+                <dd>950円/㎡〜（税抜）。賃貸物件や原状回復、シンプルな張り替えにおすすめです。</dd>
+              </div>
+              <div>
+                <dt>一般クロス</dt>
+                <dd>1,200円/㎡〜（税抜）。柄や質感にこだわりたい住宅・店舗の内装に向いています。</dd>
+              </div>
+            </dl>
+            <p class="price-minimum">
+              <strong>40㎡以下は一律で、量産クロス38,000円（税別）、一般クロス48,000円（税別）です。</strong>
+            </p>
+            <p>
+              金額は目安です。下地処理、既存クロスの状態、施工範囲、材料の種類、現場条件により変動します。
+              正式なお見積りは現地確認後にご案内します。
+            </p>
+          </div>
         </div>
       </section>
 
@@ -228,5 +286,50 @@
       <p>&copy; インテリアREVAX</p>
       <a href="#top">ページ上部へ</a>
     </footer>
+    <script>
+      const wallpaperRates = {
+        mass: { label: "量産クロス", rate: 950, minimum: 38000 },
+        standard: { label: "一般クロス", rate: 1200, minimum: 48000 },
+      };
+
+      const typeSelect = document.querySelector("#wallpaper-type");
+      const areaInput = document.querySelector("#wallpaper-area");
+      const totalOutput = document.querySelector("#price-total");
+      const formulaOutput = document.querySelector("#price-formula");
+      const priceTabs = document.querySelectorAll(".price-tab");
+
+      function formatYen(value) {
+        return new Intl.NumberFormat("ja-JP").format(value) + "円〜";
+      }
+
+      function updatePrice(type = typeSelect.value) {
+        const area = Math.max(Number(areaInput.value) || 0, 0);
+        const item = wallpaperRates[type];
+        typeSelect.value = type;
+
+        if (!area) {
+          totalOutput.textContent = "面積を入力してください";
+          formulaOutput.textContent = "表示金額は税抜です";
+        } else if (area <= 40) {
+          totalOutput.textContent = new Intl.NumberFormat("ja-JP").format(item.minimum) + "円（税別）";
+          formulaOutput.textContent = item.label + "・40㎡以下の一律料金";
+        } else {
+          totalOutput.textContent = formatYen(area * item.rate) + "（税抜）";
+          formulaOutput.textContent = area + "㎡ × " + new Intl.NumberFormat("ja-JP").format(item.rate) + "円";
+        }
+
+        priceTabs.forEach((tab) => {
+          const isActive = tab.dataset.priceType === type;
+          tab.classList.toggle("active", isActive);
+          tab.setAttribute("aria-pressed", String(isActive));
+        });
+      }
+
+      priceTabs.forEach((tab) => {
+        tab.addEventListener("click", () => updatePrice(tab.dataset.priceType));
+      });
+      typeSelect.addEventListener("change", () => updatePrice(typeSelect.value));
+      areaInput.addEventListener("input", () => updatePrice());
+    </script>
   </body>
 </html>
