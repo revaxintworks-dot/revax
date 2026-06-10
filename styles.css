@@ -262,6 +262,17 @@ h1 span {
   display: block;
 }
 
+.ja-page h1,
+.ja-hero-title {
+  max-width: 760px;
+  font-size: clamp(24px, 4vw, 48px);
+}
+
+.ja-page h1 span:first-child,
+.ja-hero-first-line {
+  white-space: nowrap;
+}
+
 h2 {
   margin-bottom: 18px;
   font-size: clamp(27px, 3.6vw, 43px);
