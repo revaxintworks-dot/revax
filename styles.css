@@ -324,9 +324,18 @@ h3 {
 }
 
 .intro p:last-child,
-.split p {
+.split p,
+.language-support p {
   color: var(--muted);
   font-size: 17px;
+}
+
+.language-support {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: clamp(28px, 6vw, 84px);
+  align-items: center;
+  background: #f5f1eb;
 }
 
 .section-head {
@@ -361,10 +370,10 @@ h3 {
 .service-photo {
   display: block;
   width: 100%;
-  aspect-ratio: 16 / 9;
+  height: clamp(120px, 12vw, 165px);
   object-fit: cover;
   border-radius: 8px;
-  margin-bottom: 22px;
+  margin-bottom: 18px;
   border: 1px solid var(--line);
 }
 
@@ -850,6 +859,7 @@ h3 {
   .intro,
   .split,
   .contact,
+  .language-support,
   .price-layout {
     grid-template-columns: 1fr;
   }
@@ -904,6 +914,10 @@ h3 {
   .area-list,
   .inquiry-form {
     grid-template-columns: 1fr;
+  }
+
+  .service-photo {
+    height: 145px;
   }
 
   .section {
